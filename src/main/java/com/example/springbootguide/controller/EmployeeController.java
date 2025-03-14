@@ -1,11 +1,16 @@
-package com.example.springbootguide.employees;
+package com.example.springbootguide.controller;
 
+import com.example.springbootguide.model.Department;
+import com.example.springbootguide.model.Employee;
+import com.example.springbootguide.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
+@RequestMapping("/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -16,7 +21,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> helloWorld() {
+    public List<Employee> readEmployees() {
         return employeeService.getEmployees();
     }
 
@@ -32,7 +37,8 @@ public class EmployeeController {
 
     @PutMapping("/{employeeId}")
     public void updateEmployee(@PathVariable("employeeId") Long id, @RequestParam(value = "email", required = false) String email,
-                               @RequestParam(value = "salary", required = false) Integer salary) {
-        employeeService.updateEmployee(id, email, salary);
+                               @RequestParam(value = "salary", required = false) BigDecimal salary,
+                               @RequestParam(value = "department", required = false) Department department) {
+        employeeService.updateEmployee(id, email, salary, department);
     }
 }
