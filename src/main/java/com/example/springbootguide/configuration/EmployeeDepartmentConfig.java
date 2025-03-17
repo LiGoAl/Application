@@ -1,4 +1,4 @@
-package com.example.springbootguide.configuration;
+/*package com.example.springbootguide.configuration;
 
 import com.example.springbootguide.model.Department;
 import com.example.springbootguide.model.Employee;
@@ -44,4 +44,4 @@ public class EmployeeDepartmentConfig {
             employeeRepository.saveAll(employeeList);
         };
     }
-}
+}*/

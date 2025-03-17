@@ -1,7 +1,5 @@
 package com.example.springbootguide.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -31,7 +29,6 @@ public class Department {
     @Setter
     @NotBlank(message = "Name can't be empty")
     private String name;
-    @JsonManagedReference
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Setter
     private List<Employee> employees;

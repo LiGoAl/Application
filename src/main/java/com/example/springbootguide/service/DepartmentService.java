@@ -1,93 +1,74 @@
 package com.example.springbootguide.service;
 
+import com.example.springbootguide.DTO.DepartmentDTO;
+import com.example.springbootguide.exception.ResourceAlreadyOccupiedException;
+import com.example.springbootguide.exception.ResourceNotFoundException;
 import com.example.springbootguide.model.Department;
 import com.example.springbootguide.model.Employee;
 import com.example.springbootguide.repository.DepartmentRepository;
-import com.example.springbootguide.repository.EmployeeRepository;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@Validated
+@RequiredArgsConstructor
 public class DepartmentService {
     private final DepartmentRepository departmentRepository;
-    private final EmployeeRepository employeeRepository;
 
-    @Autowired
-    public DepartmentService(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository) {
-        this.departmentRepository = departmentRepository;
-        this.employeeRepository = employeeRepository;
-    }
-
-    public List<Department> getDepartments() {
-        return departmentRepository.findAll();
-    }
-
-    public Department createDepartment(@Valid Department department) {
-        for (@Valid Employee employee : department.getEmployees()) {
-            if (employee.getId() != null) {
-                throw new IllegalArgumentException("Id must be empty");
+    public List<DepartmentDTO> getDepartments() {
+        List<Department> departments = departmentRepository.findAll();
+        List<DepartmentDTO> dtos = new ArrayList<>();
+        for (Department department : departments) {
+            if (department.getEmployees() != null) {
+                dtos.add(new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
+                        department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
+                                .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING)));
+            } else {
+                dtos.add(new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO));
             }
-            if (employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
-                throw new IllegalArgumentException("Email alredy taken");
-            }
-            employee.setDepartment(department);
         }
-        if (department.getId() != null) {
+        return dtos;
+    }
+
+    public DepartmentDTO createDepartment(DepartmentDTO departmentDTO) {
+        if (departmentDTO.getDepartmentId() != null) {
             throw new IllegalArgumentException("Id must be empty");
         }
-        if (departmentRepository.findByName(department.getName()).isPresent()) {
-            throw new IllegalArgumentException("Name alredy taken");
+        if (departmentRepository.findByName(departmentDTO.getDepartmentName()).isPresent()) {
+            throw new ResourceAlreadyOccupiedException("Name already taken");
         }
-        return departmentRepository.save(department);
+        Department department = new Department(departmentDTO.getDepartmentId(), departmentDTO.getDepartmentName());
+        Department savedDepartment = departmentRepository.save(department);
+        if (savedDepartment.getEmployees() != null) {
+            return new DepartmentDTO(savedDepartment.getId(), savedDepartment.getName(), savedDepartment.getEmployees().size(),
+                    savedDepartment.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
+                            .divide(BigDecimal.valueOf(savedDepartment.getEmployees().size()), 2, RoundingMode.CEILING));
+        } else {
+            return new DepartmentDTO(savedDepartment.getId(), savedDepartment.getName(), 0, BigDecimal.ZERO);
+        }
     }
 
 
-    public void deleteDepartment(@Positive(message = "Id must be greater than 0") @NotNull Long id) {
+    public void deleteDepartment(Long id) {
         if (departmentRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("Employee not found by id=%s".formatted(id));
+            throw new ResourceNotFoundException("Department not found by id=%s".formatted(id));
         }
         departmentRepository.deleteById(id);
     }
 
     @Transactional
-    public void updateDepartment(@Positive(message = "Id must be greater than 0") @NotNull(message = "Id couldn't be empty") Long id,
-                               List<Employee> employees) {
-        for (@Valid Employee employee0 : employees) {
-            if (employee0.getId() != null) {
-                var employee = employeeRepository.findById(id).orElseThrow(
-                        () -> new IllegalArgumentException("Employee not found by id=%s".formatted(id)));
-                if (employee0.getEmail() != null && !employee.getEmail().equals(employee0.getEmail())) {
-                    Optional<Employee> employeeOptional = employeeRepository.findByEmail(employee0.getEmail());
-                    if (employeeOptional.isPresent()) {
-                        throw new IllegalArgumentException("Email alredy taken");
-                    }
-                    employee.setEmail(employee0.getEmail());
-                }
-                if (employee0.getSalary() != null) {
-                    if (!employee0.getSalary().equals(employee.getSalary())) {
-                        employee.setSalary(employee0.getSalary());
-                    }
-                }
-            } else {
-                if (employeeRepository.findByEmail(employee0.getEmail()).isPresent()) {
-                    throw new IllegalArgumentException("Email alredy taken");
-                }
-                Optional<Department> dep = departmentRepository.findById(id);
-                if (dep.isEmpty()) {
-                    throw new IllegalArgumentException("Department does not exist");
-                }
-                employee0.setDepartment(dep.get());
-                employeeRepository.save(employee0);
-            }
+    public void updateDepartment(Long id, String name) {
+        if (departmentRepository.findByName(name).isPresent()) {
+            throw new ResourceAlreadyOccupiedException("Name already taken");
         }
+        if (departmentRepository.findById(id).isPresent()) {
+            Department department = departmentRepository.findById(id).get();
+            department.setName(name);
+        } else throw new ResourceNotFoundException("Department not found by id=%s".formatted(id));
     }
 }

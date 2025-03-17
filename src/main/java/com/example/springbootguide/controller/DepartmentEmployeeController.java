@@ -1,11 +1,12 @@
 package com.example.springbootguide.controller;
 
 import com.example.springbootguide.DTO.DepartmentDTO;
+import com.example.springbootguide.DTO.EmployeeDTO;
 import com.example.springbootguide.DTO.EmployeeDepartmentDTO;
-import com.example.springbootguide.model.Department;
-import com.example.springbootguide.model.Employee;
 import com.example.springbootguide.service.DepartmentEmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,14 +17,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping
+@RequiredArgsConstructor
+@Validated
 public class DepartmentEmployeeController {
 
     private final DepartmentEmployeeService departmentEmployeeService;
-
-    @Autowired
-    public DepartmentEmployeeController(DepartmentEmployeeService departmentEmployeeService) {
-        this.departmentEmployeeService = departmentEmployeeService;
-    }
 
     @GetMapping("/with-departments")
     public List<EmployeeDepartmentDTO> getAllEmployeesWithDepartments() {
@@ -31,21 +29,21 @@ public class DepartmentEmployeeController {
     }
 
     @GetMapping("/most-employees")
-    public Department getDepartmentsWithMostEmployees() {
+    public DepartmentDTO getDepartmentsWithMostEmployees() {
         return departmentEmployeeService.getDepartmentsWithMostEmployees();
     }
 
     @GetMapping("/minimal-employees")
-    public Department getDepartmentsWithMinimalEmployees() {
+    public DepartmentDTO getDepartmentsWithMinimalEmployees() {
         return departmentEmployeeService.getDepartmentsWithMinimalEmployees();
     }
 
     @GetMapping("/salary-greater-than/{salary}")
-    public List<Employee> getEmployeesWithSalaryGreaterThan(@PathVariable("salary") BigDecimal salary) {
+    public List<EmployeeDTO> getEmployeesWithSalaryGreaterThan(@PathVariable("salary") @Positive(message = "Salary must be positive") BigDecimal salary) {
         return departmentEmployeeService.getEmployeesBySalaryGreaterThan(salary);
     }
 
-    @GetMapping("/top10-department-by-salaries")
+    @GetMapping("/top10-departments-by-average-salary")
     public List<DepartmentDTO> getTop10DepartmentsByAverageSalary() {
         return departmentEmployeeService.getTop10DepartmentsByAverageSalary();
     }

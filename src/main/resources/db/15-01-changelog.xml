@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="13" author="LiGoAl">
+        <createSequence sequenceName="department_sequence" />
+        <createSequence sequenceName="employee_sequence" />
+    </changeSet>
+    <changeSet id="14" author="LiGoAl">
+        <createTable tableName="department">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="15" author="LiGoAl">
+        <createTable tableName="employee">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="salary" type="decimal" />
+            <column name="email" type="varchar(255)" />
+            <column name="birth_date" type="date" />
+            <column name="department_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_employee_department" references="department(id)" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="16" author="LiGoAl">
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="HR" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Dev" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Vasya" />
+            <column name="salary" value="50000" />
+            <column name="email" value="vasya@gmail.com" />
+            <column name="birth_date" value="2000-01-03" />
+            <column name="department_id" valueNumeric="1" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Pasha" />
+            <column name="salary" value="55000" />
+            <column name="email" value="pasha@gmail.com" />
+            <column name="birth_date" value="2004-02-03" />
+            <column name="department_id" valueNumeric="1" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Alex" />
+            <column name="salary" value="75000" />
+            <column name="email" value="alex@mail.ru" />
+            <column name="birth_date" value="1999-03-01" />
+            <column name="department_id" valueNumeric="2" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

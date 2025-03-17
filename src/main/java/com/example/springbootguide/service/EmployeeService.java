@@ -1,74 +1,76 @@
 package com.example.springbootguide.service;
 
+import com.example.springbootguide.DTO.EmployeeDTO;
+import com.example.springbootguide.exception.ResourceAlreadyOccupiedException;
+import com.example.springbootguide.exception.ResourceNotFoundException;
 import com.example.springbootguide.model.Department;
 import com.example.springbootguide.model.Employee;
 import com.example.springbootguide.repository.DepartmentRepository;
 import com.example.springbootguide.repository.EmployeeRepository;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Validated
+@RequiredArgsConstructor
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
 
-    @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
-        this.employeeRepository = employeeRepository;
-        this.departmentRepository = departmentRepository;
+    public List<EmployeeDTO> getEmployees() {
+        List<Employee> employees = employeeRepository.findAll();
+        List<EmployeeDTO> dtos = new ArrayList<>();
+        for (Employee employee : employees) {
+            dtos.add(new EmployeeDTO(employee.getId(), employee.getName(), employee.getEmail(),
+                    employee.getBirthDate(), employee.getSalary(), employee.getDepartment().getId()));
+        }
+        return dtos;
     }
 
-    public List<Employee> getEmployees() {
-        return employeeRepository.findAll();
-    }
-
-    public Employee createEmployee(@Valid Employee employee) {
-        if (employee.getId() != null) {
+    public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
+        if (employeeDTO.getId() != null) {
             throw new IllegalArgumentException("Id must be empty");
         }
-        if (employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email alredy taken");
+        if (employeeRepository.findByEmail(employeeDTO.getEmail()).isPresent()) {
+            throw new ResourceAlreadyOccupiedException("Email already taken");
         }
-        if (employee.getDepartment() == null) {
+        if (employeeDTO.getDepartmentId() == null) {
             throw new IllegalArgumentException("Department must not be null");
         }
-        Optional<Department> dep = departmentRepository.findById(employee.getDepartment().getId());
+        Optional<Department> dep = departmentRepository.findById(employeeDTO.getDepartmentId());
         if (dep.isEmpty()) {
-            throw new IllegalArgumentException("Department does not exist");
+            throw new ResourceNotFoundException("Department not found by id=%s".formatted(employeeDTO.getDepartmentId()));
         }
+        Employee employee = new Employee(employeeDTO.getId(), employeeDTO.getName(), employeeDTO.getEmail(),
+                employeeDTO.getBirthDate(), employeeDTO.getSalary());
         employee.setDepartment(dep.get());
-        return employeeRepository.save(employee);
+        Employee employeeFromBd = employeeRepository.save(employee);
+        return new EmployeeDTO(employeeFromBd.getId(), employeeFromBd.getName(), employeeFromBd.getEmail(),
+                employeeDTO.getBirthDate(), employeeDTO.getSalary(), employeeDTO.getDepartmentId());
     }
 
 
-    public void deleteEmployee(@Positive(message = "Id must be greater than 0") @NotNull Long id) {
+    public void deleteEmployee(Long id) {
         if (employeeRepository.findById(id).isEmpty()) {
-            throw new IllegalArgumentException("Employee not found by id=%s".formatted(id));
+            throw new ResourceNotFoundException("Employee not found by id=%s".formatted(id));
         }
         employeeRepository.deleteById(id);
     }
 
     @Transactional
-    public void updateEmployee(@Positive(message = "Id must be greater than 0") @NotNull(message = "Id couldn't be empty") Long id,
-                               @Pattern(regexp = "\\w+@\\w+\\.\\w+",message = "Email doesn't match the form") String email,
-                               @DecimalMin(value = "5000", message = "Salary must be bigger than 5000") BigDecimal salary,
-                               @Valid Department department) {
+    public void updateEmployee(Long id, String email, BigDecimal salary, Long departmentId) {
         var employee = employeeRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Employee not found by id=%s".formatted(id)));
+                () -> new ResourceNotFoundException("Employee not found by id=%s".formatted(id)));
         if (email != null && !employee.getEmail().equals(email)) {
             Optional<Employee> employeeOptional = employeeRepository.findByEmail(email);
             if (employeeOptional.isPresent()) {
-                throw new IllegalArgumentException("Email alredy taken");
+                throw new ResourceAlreadyOccupiedException("Email already taken");
             }
             employee.setEmail(email);
         }
@@ -77,9 +79,9 @@ public class EmployeeService {
                 employee.setSalary(salary);
             }
         }
-        Optional<Department> dep = departmentRepository.findById(department.getId());
+        Optional<Department> dep = departmentRepository.findById(departmentId);
         if (dep.isEmpty()) {
-            throw new IllegalArgumentException("Department does not exist");
+            throw new ResourceNotFoundException("Department not found by id=%s".formatted(departmentId));
         }
         employee.setDepartment(dep.get());
     }

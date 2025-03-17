@@ -1,41 +1,43 @@
 package com.example.springbootguide.controller;
 
-import com.example.springbootguide.model.Department;
-import com.example.springbootguide.model.Employee;
+import com.example.springbootguide.DTO.DepartmentDTO;
 import com.example.springbootguide.service.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/departments")
+@RequiredArgsConstructor
+@Validated
 public class DepartmentController {
 
     private final DepartmentService departmentService;
 
-    @Autowired
-    public DepartmentController(DepartmentService departmentService) {
-        this.departmentService = departmentService;
-    }
-
     @GetMapping
-    public List<Department> readDepartments() {
+    public List<DepartmentDTO> readDepartments() {
         return departmentService.getDepartments();
     }
 
     @PostMapping
-    public Department createDepartment(@RequestBody Department department) {
-        return departmentService.createDepartment(department);
+    public DepartmentDTO createDepartment(@RequestBody @Valid DepartmentDTO departmentDTO) {
+        return departmentService.createDepartment(departmentDTO);
     }
 
     @DeleteMapping("/{departmentId}")
-    public void deleteDepartment(@PathVariable("departmentId") Long id) {
+    public void deleteDepartment(@PathVariable("departmentId") @Positive(message = "Id must be greater than 0") @NotNull Long id) {
         departmentService.deleteDepartment(id);
     }
 
-    @PutMapping("/{departmentId}/{employees}")
-    public void updateDepartment(@PathVariable("departmentId") Long id, @RequestBody List<Employee> employees) {
-        departmentService.updateDepartment(id, employees);
+    @PutMapping("/{departmentId}")
+    public void updateDepartment(@PathVariable("departmentId") @Positive(message = "Id must be greater than 0") @NotNull Long id,
+                                 @RequestParam(value = "name", required = false) @NotBlank String name) {
+        departmentService.updateDepartment(id, name);
     }
 }

@@ -1,44 +1,77 @@
 package com.example.springbootguide.service;
 
 import com.example.springbootguide.DTO.DepartmentDTO;
+import com.example.springbootguide.DTO.EmployeeDTO;
 import com.example.springbootguide.DTO.EmployeeDepartmentDTO;
 import com.example.springbootguide.model.Department;
 import com.example.springbootguide.model.Employee;
 import com.example.springbootguide.repository.EmployeeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Validated
+@RequiredArgsConstructor
 public class DepartmentEmployeeService {
     private final EmployeeRepository employeeRepository;
 
-    @Autowired
-    public DepartmentEmployeeService(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
-
     public List<EmployeeDepartmentDTO> getAllEmployeesWithDepartments() {
-        return employeeRepository.findAllEmployeesWithDepartments();
+        List<Employee> employees = employeeRepository.findAll();
+        List<EmployeeDepartmentDTO> dtos = new ArrayList<>();
+        for (Employee employee : employees) {
+            dtos.add(new EmployeeDepartmentDTO(employee.getId(), employee.getName(), employee.getDepartment().getId(), employee.getDepartment().getName()));
+        }
+        return dtos;
     }
 
-    public Department getDepartmentsWithMostEmployees() {
-        return employeeRepository.findDepartmentWithMostEmployees();
+    public DepartmentDTO getDepartmentsWithMostEmployees() {
+        Department department = employeeRepository.findDepartmentWithMostEmployees();
+        if (department.getEmployees() != null) {
+            return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
+                    department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
+                            .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING));
+        } else {
+            return new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO);
+        }
     }
 
     public List<DepartmentDTO> getTop10DepartmentsByAverageSalary() {
-        return employeeRepository.findTop10DepartmentsByAverageSalary();
+        List<Department> departments = employeeRepository.findTop10DepartmentsByAverageSalary();
+        List<DepartmentDTO> dtos = new ArrayList<>();
+        for (Department department : departments) {
+            if (department.getEmployees() != null) {
+                dtos.add(new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
+                        department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
+                                .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING)));
+            } else {
+                dtos.add(new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO));
+            }
+        }
+        return dtos;
     }
 
-    public Department getDepartmentsWithMinimalEmployees() {
-        return employeeRepository.findDepartmentWithMinimalEmployees();
+    public DepartmentDTO getDepartmentsWithMinimalEmployees() {
+        Department department = employeeRepository.findDepartmentWithMinimalEmployees();
+        if (department.getEmployees() != null) {
+            return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
+                    department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
+                            .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING));
+        } else {
+            return new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO);
+        }
     }
 
-    public List<Employee> getEmployeesBySalaryGreaterThan(BigDecimal salary) {
-        return employeeRepository.findEmployeesBySalaryGreaterThan(salary);
+    public List<EmployeeDTO> getEmployeesBySalaryGreaterThan(BigDecimal salary) {
+        List<Employee> employees = employeeRepository.findEmployeesBySalaryGreaterThan(salary);
+        List<EmployeeDTO> dtos = new ArrayList<>();
+        for (Employee employee : employees) {
+            dtos.add(new EmployeeDTO(employee.getId(), employee.getName(), employee.getEmail(), employee.getBirthDate(),
+                    employee.getSalary(), employee.getDepartment().getId()));
+        }
+        return dtos;
     }
 }
