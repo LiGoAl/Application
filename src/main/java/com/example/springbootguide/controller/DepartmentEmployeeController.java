@@ -29,13 +29,13 @@ public class DepartmentEmployeeController {
     }
 
     @GetMapping("/most-employees")
-    public DepartmentDTO getDepartmentsWithMostEmployees() {
-        return departmentEmployeeService.getDepartmentsWithMostEmployees();
+    public DepartmentDTO getDepartmentWithMostEmployees() {
+        return departmentEmployeeService.getDepartmentWithMostEmployees();
     }
 
     @GetMapping("/minimal-employees")
-    public DepartmentDTO getDepartmentsWithMinimalEmployees() {
-        return departmentEmployeeService.getDepartmentsWithMinimalEmployees();
+    public DepartmentDTO getDepartmentWithMinimalEmployees() {
+        return departmentEmployeeService.getDepartmentWithMinimalEmployees();
     }
 
     @GetMapping("/salary-greater-than/{salary}")

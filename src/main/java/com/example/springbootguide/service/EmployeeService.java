@@ -41,7 +41,7 @@ public class EmployeeService {
             throw new ResourceAlreadyOccupiedException("Email already taken");
         }
         if (employeeDTO.getDepartmentId() == null) {
-            throw new IllegalArgumentException("Department must not be null");
+            throw new IllegalArgumentException("Department id must not be null");
         }
         Optional<Department> dep = departmentRepository.findById(employeeDTO.getDepartmentId());
         if (dep.isEmpty()) {
@@ -52,7 +52,7 @@ public class EmployeeService {
         employee.setDepartment(dep.get());
         Employee employeeFromBd = employeeRepository.save(employee);
         return new EmployeeDTO(employeeFromBd.getId(), employeeFromBd.getName(), employeeFromBd.getEmail(),
-                employeeDTO.getBirthDate(), employeeDTO.getSalary(), employeeDTO.getDepartmentId());
+                employeeFromBd.getBirthDate(), employeeFromBd.getSalary(), employeeFromBd.getDepartment().getId());
     }
 
 

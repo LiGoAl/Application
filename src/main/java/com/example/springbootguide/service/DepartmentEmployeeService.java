@@ -28,7 +28,7 @@ public class DepartmentEmployeeService {
         return dtos;
     }
 
-    public DepartmentDTO getDepartmentsWithMostEmployees() {
+    public DepartmentDTO getDepartmentWithMostEmployees() {
         Department department = employeeRepository.findDepartmentWithMostEmployees();
         if (department.getEmployees() != null) {
             return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
@@ -54,7 +54,7 @@ public class DepartmentEmployeeService {
         return dtos;
     }
 
-    public DepartmentDTO getDepartmentsWithMinimalEmployees() {
+    public DepartmentDTO getDepartmentWithMinimalEmployees() {
         Department department = employeeRepository.findDepartmentWithMinimalEmployees();
         if (department.getEmployees() != null) {
             return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),

@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> errors = new HashMap<>();
         errors.put("status", HttpStatus.BAD_REQUEST.value());
         errors.put("error", "Malformed JSON request");
-        errors.put("message", ex.getMessage());
+        errors.put("message", "Please ensure that your request body is properly structured and valid JSON.");
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 

@@ -1,5 +1,7 @@
 package com.example.springbootguide.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +13,7 @@ import java.math.BigDecimal;
 @Setter
 public class DepartmentDTO {
     private Long departmentId;
+    @NotBlank(message = "Name can't be empty")
     private String departmentName;
     private Integer employeeSize;
     private BigDecimal averageSalary;

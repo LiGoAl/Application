@@ -45,6 +45,56 @@
             <column name="name" value="Dev" />
         </insert>
 
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="LOL" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Dota" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Design" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Building" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Test" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Dev-2" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="HR-2" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Design-2" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="LOL-2" />
+        </insert>
+
+        <insert tableName="department">
+            <column name="id" valueSequenceNext="department_sequence" />
+            <column name="name" value="Dota-2" />
+        </insert>
+
         <insert tableName="employee">
             <column name="id" valueSequenceNext="employee_sequence" />
             <column name="name" value="Vasya" />
@@ -70,6 +120,222 @@
             <column name="email" value="alex@mail.ru" />
             <column name="birth_date" value="1999-03-01" />
             <column name="department_id" valueNumeric="2" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Vasya" />
+            <column name="salary" value="55000" />
+            <column name="email" value="vasya27@gmail.com" />
+            <column name="birth_date" value="1998-01-03" />
+            <column name="department_id" valueNumeric="3" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Dasha" />
+            <column name="salary" value="58000" />
+            <column name="email" value="dasha@gmail.com" />
+            <column name="birth_date" value="2003-02-03" />
+            <column name="department_id" valueNumeric="3" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Alexandr" />
+            <column name="salary" value="65000" />
+            <column name="email" value="alexandr@mail.ru" />
+            <column name="birth_date" value="1999-03-01" />
+            <column name="department_id" valueNumeric="4" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Misha" />
+            <column name="salary" value="35000" />
+            <column name="email" value="misha@gmail.com" />
+            <column name="birth_date" value="2000-01-03" />
+            <column name="department_id" valueNumeric="4" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="George" />
+            <column name="salary" value="85000" />
+            <column name="email" value="george@gmail.com" />
+            <column name="birth_date" value="2002-02-03" />
+            <column name="department_id" valueNumeric="2" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Ksenia" />
+            <column name="salary" value="45000" />
+            <column name="email" value="ks@mail.ru" />
+            <column name="birth_date" value="1997-03-01" />
+            <column name="department_id" valueNumeric="5" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Lena" />
+            <column name="salary" value="50000" />
+            <column name="email" value="lena@gmail.com" />
+            <column name="birth_date" value="2000-01-03" />
+            <column name="department_id" valueNumeric="5" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Dima" />
+            <column name="salary" value="68000" />
+            <column name="email" value="dima@gmail.com" />
+            <column name="birth_date" value="2001-02-03" />
+            <column name="department_id" valueNumeric="6" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Rashid" />
+            <column name="salary" value="71000" />
+            <column name="email" value="rashid@mail.ru" />
+            <column name="birth_date" value="1999-03-01" />
+            <column name="department_id" valueNumeric="2" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Lee" />
+            <column name="salary" value="50000" />
+            <column name="email" value="lee@gmail.com" />
+            <column name="birth_date" value="2000-01-03" />
+            <column name="department_id" valueNumeric="6" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Pablo" />
+            <column name="salary" value="40000" />
+            <column name="email" value="pablo@gmail.com" />
+            <column name="birth_date" value="1999-02-03" />
+            <column name="department_id" valueNumeric="7" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Oleg" />
+            <column name="salary" value="59000" />
+            <column name="email" value="oleg@mail.ru" />
+            <column name="birth_date" value="2002-03-01" />
+            <column name="department_id" valueNumeric="8" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Nastya" />
+            <column name="salary" value="80000" />
+            <column name="email" value="nastya@gmail.com" />
+            <column name="birth_date" value="1994-01-03" />
+            <column name="department_id" valueNumeric="9" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Edik" />
+            <column name="salary" value="55000" />
+            <column name="email" value="edik@gmail.com" />
+            <column name="birth_date" value="2001-02-03" />
+            <column name="department_id" valueNumeric="10" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Donald" />
+            <column name="salary" value="95000" />
+            <column name="email" value="donald@mail.ru" />
+            <column name="birth_date" value="1993-03-01" />
+            <column name="department_id" valueNumeric="5" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Sergey" />
+            <column name="salary" value="60000" />
+            <column name="email" value="sergey@gmail.com" />
+            <column name="birth_date" value="1999-01-03" />
+            <column name="department_id" valueNumeric="6" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Tanya" />
+            <column name="salary" value="35000" />
+            <column name="email" value="tanya@gmail.com" />
+            <column name="birth_date" value="2005-02-03" />
+            <column name="department_id" valueNumeric="1" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Roma" />
+            <column name="salary" value="75000" />
+            <column name="email" value="roma@mail.ru" />
+            <column name="birth_date" value="1996-03-01" />
+            <column name="department_id" valueNumeric="11" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Gena" />
+            <column name="salary" value="44000" />
+            <column name="email" value="gena@gmail.com" />
+            <column name="birth_date" value="2000-01-03" />
+            <column name="department_id" valueNumeric="12" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Polya" />
+            <column name="salary" value="66000" />
+            <column name="email" value="polya@gmail.com" />
+            <column name="birth_date" value="2000-02-03" />
+            <column name="department_id" valueNumeric="8" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Alex" />
+            <column name="salary" value="75000" />
+            <column name="email" value="alex24@mail.ru" />
+            <column name="birth_date" value="2001-03-01" />
+            <column name="department_id" valueNumeric="12" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Pol" />
+            <column name="salary" value="50000" />
+            <column name="email" value="pol@gmail.com" />
+            <column name="birth_date" value="2000-01-03" />
+            <column name="department_id" valueNumeric="7" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Petya" />
+            <column name="salary" value="105000" />
+            <column name="email" value="petya@gmail.com" />
+            <column name="birth_date" value="1990-02-03" />
+            <column name="department_id" valueNumeric="6" />
+        </insert>
+
+        <insert tableName="employee">
+            <column name="id" valueSequenceNext="employee_sequence" />
+            <column name="name" value="Danya" />
+            <column name="salary" value="65000" />
+            <column name="email" value="danya@mail.ru" />
+            <column name="birth_date" value="1999-03-01" />
+            <column name="department_id" valueNumeric="8" />
         </insert>
     </changeSet>
 
