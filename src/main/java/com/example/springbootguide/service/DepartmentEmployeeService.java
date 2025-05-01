@@ -30,13 +30,15 @@ public class DepartmentEmployeeService {
 
     public DepartmentDTO getDepartmentWithMostEmployees() {
         Department department = employeeRepository.findDepartmentWithMostEmployees();
-        if (department.getEmployees() != null) {
-            return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
-                    department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
-                            .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING));
-        } else {
-            return new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO);
-        }
+        if (department != null) {
+            if (department.getEmployees() != null) {
+                return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
+                        department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
+                                .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING));
+            } else {
+                return new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO);
+            }
+        } else return null;
     }
 
     public List<DepartmentDTO> getTop10DepartmentsByAverageSalary() {
@@ -56,13 +58,15 @@ public class DepartmentEmployeeService {
 
     public DepartmentDTO getDepartmentWithMinimalEmployees() {
         Department department = employeeRepository.findDepartmentWithMinimalEmployees();
-        if (department.getEmployees() != null) {
-            return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
-                    department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
-                            .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING));
-        } else {
-            return new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO);
-        }
+        if (department != null) {
+            if (department.getEmployees() != null) {
+                return new DepartmentDTO(department.getId(), department.getName(), department.getEmployees().size(),
+                        department.getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
+                                .divide(BigDecimal.valueOf(department.getEmployees().size()), 2, RoundingMode.CEILING));
+            } else {
+                return new DepartmentDTO(department.getId(), department.getName(), 0, BigDecimal.ZERO);
+            }
+        } else return null;
     }
 
     public List<EmployeeDTO> getEmployeesBySalaryGreaterThan(BigDecimal salary) {
