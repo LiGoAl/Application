@@ -1,16 +1,12 @@
-package com.example.springbootguide.controller;
+package com.example.springbootguide.controllers;
 
 import com.example.springbootguide.DTO.DepartmentDTO;
 import com.example.springbootguide.DTO.EmployeeDTO;
 import com.example.springbootguide.DTO.EmployeeDepartmentDTO;
-import com.example.springbootguide.service.DepartmentEmployeeService;
-import jakarta.validation.constraints.Positive;
+import com.example.springbootguide.services.DepartmentEmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,8 +20,9 @@ public class DepartmentEmployeeController {
     private final DepartmentEmployeeService departmentEmployeeService;
 
     @GetMapping("/with-departments")
-    public List<EmployeeDepartmentDTO> getAllEmployeesWithDepartments() {
-        return departmentEmployeeService.getAllEmployeesWithDepartments();
+    public List<EmployeeDepartmentDTO> getAllEmployeesWithDepartments(@RequestParam(defaultValue = "0") Integer page,
+                                                                      @RequestParam(defaultValue = "5") Integer size) {
+        return departmentEmployeeService.getAllEmployeesWithDepartments(page, size);
     }
 
     @GetMapping("/most-employees")
@@ -39,12 +36,20 @@ public class DepartmentEmployeeController {
     }
 
     @GetMapping("/salary-greater-than/{salary}")
-    public List<EmployeeDTO> getEmployeesWithSalaryGreaterThan(@PathVariable("salary") @Positive(message = "Salary must be positive") BigDecimal salary) {
-        return departmentEmployeeService.getEmployeesBySalaryGreaterThan(salary);
+    public List<EmployeeDTO> getEmployeesWithSalaryGreaterThan(@PathVariable("salary") BigDecimal salary,
+                                                               @RequestParam(defaultValue = "0") Integer page,
+                                                               @RequestParam(defaultValue = "5") Integer size) {
+        return departmentEmployeeService.getEmployeesBySalaryGreaterThan(validatedSalary(salary), page, size);
     }
 
     @GetMapping("/top10-departments-by-average-salary")
     public List<DepartmentDTO> getTop10DepartmentsByAverageSalary() {
         return departmentEmployeeService.getTop10DepartmentsByAverageSalary();
+    }
+
+    private BigDecimal validatedSalary(BigDecimal salary) {
+        if (salary.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Salary must be positive");
+        } else return salary;
     }
 }

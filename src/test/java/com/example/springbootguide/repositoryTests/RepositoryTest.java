@@ -1,12 +1,13 @@
 package com.example.springbootguide.repositoryTests;
 
-import com.example.springbootguide.model.Department;
-import com.example.springbootguide.model.Employee;
-import com.example.springbootguide.repository.DepartmentRepository;
-import com.example.springbootguide.repository.EmployeeRepository;
+import com.example.springbootguide.models.Department;
+import com.example.springbootguide.models.Employee;
+import com.example.springbootguide.repositories.DepartmentRepository;
+import com.example.springbootguide.repositories.EmployeeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -67,7 +68,7 @@ public class RepositoryTest {
         BigDecimal salary = BigDecimal.valueOf(70000);
         Integer size = 8;
 
-        List<Employee> foundEmployees = employeeRepository.findEmployeesBySalaryGreaterThan(salary);
+        List<Employee> foundEmployees = employeeRepository.findEmployeesBySalaryGreaterThan(salary, PageRequest.of(0, 10)).getContent();
 
         assertEquals(size, foundEmployees.size());
         for (Employee employee : foundEmployees) {
@@ -79,7 +80,7 @@ public class RepositoryTest {
     public void testFindEmployeesBySalaryGreaterThan_NotFound() {
         BigDecimal salary = BigDecimal.valueOf(170000);
 
-        List<Employee> foundEmployees = employeeRepository.findEmployeesBySalaryGreaterThan(salary);
+        List<Employee> foundEmployees = employeeRepository.findEmployeesBySalaryGreaterThan(salary, PageRequest.of(0, 10)).getContent();
 
         assertThat(foundEmployees).isEmpty();
     }
@@ -90,7 +91,10 @@ public class RepositoryTest {
         String name = "Building";
         Integer size = 4;
 
-        Department foundDepartment = employeeRepository.findDepartmentWithMostEmployees();
+        Optional<Department> optionalDepartment = employeeRepository.findDepartmentWithMostEmployees();
+
+        assertThat(optionalDepartment).isPresent();
+        Department foundDepartment = optionalDepartment.get();
 
         assertEquals(id, foundDepartment.getId());
         assertEquals(name, foundDepartment.getName());
@@ -103,7 +107,10 @@ public class RepositoryTest {
         String name = "HR-2";
         Integer size = 1;
 
-        Department foundDepartment = employeeRepository.findDepartmentWithMinimalEmployees();
+        Optional<Department> optionalDepartment = employeeRepository.findDepartmentWithMinimalEmployees();
+
+        assertThat(optionalDepartment).isPresent();
+        Department foundDepartment = optionalDepartment.get();
 
         assertEquals(id, foundDepartment.getId());
         assertEquals(name, foundDepartment.getName());

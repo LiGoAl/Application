@@ -1,9 +1,9 @@
 package com.example.springbootguide.exceptionHandlerTests;
 
-import com.example.springbootguide.exception.GlobalExceptionHandler;
-import com.example.springbootguide.exception.RequestValidationException;
-import com.example.springbootguide.exception.ResourceAlreadyOccupiedException;
-import com.example.springbootguide.exception.ResourceNotFoundException;
+import com.example.springbootguide.exceptions.GlobalExceptionHandler;
+import com.example.springbootguide.exceptions.RequestValidationException;
+import com.example.springbootguide.exceptions.ResourceAlreadyOccupiedException;
+import com.example.springbootguide.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

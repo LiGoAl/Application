@@ -1,6 +1,6 @@
-package com.example.springbootguide.repository;
+package com.example.springbootguide.repositories;
 
-import com.example.springbootguide.model.Department;
+import com.example.springbootguide.models.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.example.springbootguide.model;
+package com.example.springbootguide.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
@@ -13,6 +14,8 @@ import java.util.List;
 @Table(name = "department")
 @NoArgsConstructor
 @Getter
+@Setter
+@Accessors(chain = true)
 public class Department {
     @Id
     @SequenceGenerator(
@@ -26,11 +29,9 @@ public class Department {
     )
     @Positive(message = "Id must be greater than 0")
     private Long id;
-    @Setter
     @NotBlank(message = "Name can't be empty")
     private String name;
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Setter
     private List<Employee> employees;
 
     public Department(Long id, String name) {

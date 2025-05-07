@@ -4,17 +4,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.example.springbootguide.DTO.DepartmentDTO;
-import com.example.springbootguide.exception.ResourceAlreadyOccupiedException;
-import com.example.springbootguide.exception.ResourceNotFoundException;
-import com.example.springbootguide.model.Department;
-import com.example.springbootguide.model.Employee;
-import com.example.springbootguide.repository.DepartmentRepository;
-import com.example.springbootguide.service.DepartmentService;
+import com.example.springbootguide.exceptions.ResourceAlreadyOccupiedException;
+import com.example.springbootguide.exceptions.ResourceNotFoundException;
+import com.example.springbootguide.models.Department;
+import com.example.springbootguide.models.Employee;
+import com.example.springbootguide.repositories.DepartmentRepository;
+import com.example.springbootguide.services.DepartmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -45,9 +47,9 @@ public class DepartmentServiceTest {
         employee1.setDepartment(department1);
         employee2.setDepartment(department2);
 
-        when(departmentRepository.findAll()).thenReturn(List.of(department1, department2));
+        when(departmentRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(department1, department2), PageRequest.of(0, 10), 2));
 
-        List<DepartmentDTO> result = departmentService.getDepartments();
+        List<DepartmentDTO> result = departmentService.getDepartments(0 ,10);
 
         assertEquals(2, result.size());
 
@@ -63,7 +65,7 @@ public class DepartmentServiceTest {
         assertEquals(1, dto2.getEmployeeSize());
         assertEquals(0, dto2.getAverageSalary().compareTo(BigDecimal.valueOf(20000)));
 
-        verify(departmentRepository, times(1)).findAll();
+        verify(departmentRepository, times(1)).findAll(any(PageRequest.class));
     }
 
     @Test
@@ -154,7 +156,7 @@ public class DepartmentServiceTest {
         assertEquals(departmentName, department.getName());
 
         verify(departmentRepository, times(1)).findByName(departmentName);
-        verify(departmentRepository, times(2)).findById(departmentId);
+        verify(departmentRepository, times(1)).findById(departmentId);
     }
 
     @Test
@@ -163,6 +165,7 @@ public class DepartmentServiceTest {
         Long departmentId = 1L;
         String departmentName = "Department 1";
 
+        when(departmentRepository.findById(departmentId)).thenReturn(Optional.of(existingDepartment));
         when(departmentRepository.findByName(departmentName)).thenReturn(Optional.of(existingDepartment));
 
         ResourceAlreadyOccupiedException exception = assertThrows(ResourceAlreadyOccupiedException.class, () ->
@@ -178,7 +181,6 @@ public class DepartmentServiceTest {
         Long departmentId = 2L;
         String departmentName = "Department 2";
 
-        when(departmentRepository.findByName(departmentName)).thenReturn(Optional.empty());
         when(departmentRepository.findById(departmentId)).thenReturn(Optional.empty());
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
@@ -186,7 +188,6 @@ public class DepartmentServiceTest {
 
         assertEquals("Department not found by id=%s".formatted(departmentId), exception.getMessage());
 
-        verify(departmentRepository, times(1)).findByName(departmentName);
         verify(departmentRepository, times(1)).findById(departmentId);
     }
 }

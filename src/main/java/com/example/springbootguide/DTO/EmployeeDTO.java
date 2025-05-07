@@ -1,6 +1,6 @@
 package com.example.springbootguide.DTO;
 
-import com.example.springbootguide.customAnnotation.ValidBirthDate;
+import com.example.springbootguide.customAnnotations.ValidBirthDate;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;

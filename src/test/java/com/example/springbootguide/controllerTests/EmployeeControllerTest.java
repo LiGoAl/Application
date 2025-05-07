@@ -1,8 +1,8 @@
 package com.example.springbootguide.controllerTests;
 
 import com.example.springbootguide.DTO.EmployeeDTO;
-import com.example.springbootguide.controller.EmployeeController;
-import com.example.springbootguide.service.EmployeeService;
+import com.example.springbootguide.controllers.EmployeeController;
+import com.example.springbootguide.services.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ public class EmployeeControllerTest {
         List<EmployeeDTO> employees = List.of(new EmployeeDTO(1L, "Vasya", "vasya@gmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(50000), 1L),
                 new EmployeeDTO(2L, "Jim", "jim@mail.ru", LocalDate.parse("2000-03-01"), BigDecimal.valueOf(45000), 2L));
 
-        when(employeeService.getEmployees()).thenReturn(employees);
+        when(employeeService.getEmployees(0, 5)).thenReturn(employees);
 
         mockMvc.perform(get("/employees")
                         .accept(MediaType.APPLICATION_JSON))
@@ -65,7 +65,7 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$[1].salary").value(BigDecimal.valueOf(45000)))
                 .andExpect(jsonPath("$[1].departmentId").value(2L));
 
-        verify(employeeService, times(1)).getEmployees();
+        verify(employeeService, times(1)).getEmployees(0, 5);
     }
 
     @Test

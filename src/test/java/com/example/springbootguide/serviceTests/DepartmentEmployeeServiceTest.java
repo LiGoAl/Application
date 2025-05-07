@@ -6,21 +6,25 @@ import static org.mockito.Mockito.*;
 import com.example.springbootguide.DTO.DepartmentDTO;
 import com.example.springbootguide.DTO.EmployeeDTO;
 import com.example.springbootguide.DTO.EmployeeDepartmentDTO;
-import com.example.springbootguide.model.Department;
-import com.example.springbootguide.model.Employee;
-import com.example.springbootguide.repository.EmployeeRepository;
-import com.example.springbootguide.service.DepartmentEmployeeService;
+import com.example.springbootguide.models.Department;
+import com.example.springbootguide.models.Employee;
+import com.example.springbootguide.repositories.EmployeeRepository;
+import com.example.springbootguide.services.DepartmentEmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DepartmentEmployeeServiceTest {
 
@@ -50,6 +54,11 @@ public class DepartmentEmployeeServiceTest {
         return employees;
     }
 
+    public Page<Employee> setUpEmployeePage() {
+        List<Employee> employees = setUpEmployees();
+        return new PageImpl<>(employees, PageRequest.of(0, 10), employees.size());
+    }
+
     private static List<Department> setUpDepartments() {
         Employee employee1 = new Employee(1L, "Jar", "jar@mail.ru", LocalDate.parse("2000-01-01"), BigDecimal.valueOf(10000));
         Employee employee2 = new Employee(2L, "Rar", "rar@mail.ru", LocalDate.parse("2002-01-01"), BigDecimal.valueOf(20000));
@@ -67,9 +76,9 @@ public class DepartmentEmployeeServiceTest {
 
     @Test
     public void testGetAllEmployeesWithDepartments_Success() {
-        when(employeeRepository.findAll()).thenReturn(setUpEmployees());
+        when(employeeRepository.findAll(any(PageRequest.class))).thenReturn(setUpEmployeePage());
 
-        List<EmployeeDepartmentDTO> result = departmentEmployeeService.getAllEmployeesWithDepartments();
+        List<EmployeeDepartmentDTO> result = departmentEmployeeService.getAllEmployeesWithDepartments(0, 10);
 
         assertEquals(2, result.size());
 
@@ -80,7 +89,7 @@ public class DepartmentEmployeeServiceTest {
             assertEquals(setUpEmployees().get(i).getDepartment().getName(), result.get(i).getDepartmentName());
         }
 
-        verify(employeeRepository, times(1)).findAll();
+        verify(employeeRepository, times(1)).findAll(any(PageRequest.class));
     }
 
     @Test
@@ -88,7 +97,7 @@ public class DepartmentEmployeeServiceTest {
         BigDecimal salary = setUpDepartments().getFirst().getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
                 .divide(BigDecimal.valueOf(setUpDepartments().getFirst().getEmployees().size()), 2, RoundingMode.CEILING);
 
-        when(employeeRepository.findDepartmentWithMostEmployees()).thenReturn(setUpDepartments().getFirst());
+        when(employeeRepository.findDepartmentWithMostEmployees()).thenReturn(Optional.of(setUpDepartments().getFirst()));
 
         DepartmentDTO result = departmentEmployeeService.getDepartmentWithMostEmployees();
 
@@ -105,7 +114,7 @@ public class DepartmentEmployeeServiceTest {
         BigDecimal salary = setUpDepartments().getFirst().getEmployees().stream().map(Employee::getSalary).reduce(BigDecimal.ZERO, BigDecimal::add)
                 .divide(BigDecimal.valueOf(setUpDepartments().getFirst().getEmployees().size()), 2, RoundingMode.CEILING);
 
-        when(employeeRepository.findDepartmentWithMinimalEmployees()).thenReturn(setUpDepartments().getFirst());
+        when(employeeRepository.findDepartmentWithMinimalEmployees()).thenReturn(Optional.of(setUpDepartments().getFirst()));
 
         DepartmentDTO result = departmentEmployeeService.getDepartmentWithMinimalEmployees();
 
@@ -120,10 +129,11 @@ public class DepartmentEmployeeServiceTest {
     @Test
     public void testGetEmployeesBySalaryGreaterThan_Success() {
         BigDecimal salary = BigDecimal.valueOf(7500);
+        PageRequest pageRequest = PageRequest.of(0, 10);
 
-        when(employeeRepository.findEmployeesBySalaryGreaterThan(salary)).thenReturn(setUpEmployees());
+        when(employeeRepository.findEmployeesBySalaryGreaterThan(salary, pageRequest)).thenReturn(setUpEmployeePage());
 
-        List<EmployeeDTO> result = departmentEmployeeService.getEmployeesBySalaryGreaterThan(salary);
+        List<EmployeeDTO> result = departmentEmployeeService.getEmployeesBySalaryGreaterThan(salary, 0, 10);
 
         assertEquals(2, result.size());
 
@@ -136,7 +146,7 @@ public class DepartmentEmployeeServiceTest {
             assertEquals(setUpEmployees().get(i).getDepartment().getId(), result.get(i).getDepartmentId());
         }
 
-        verify(employeeRepository, times(1)).findEmployeesBySalaryGreaterThan(salary);
+        verify(employeeRepository, times(1)).findEmployeesBySalaryGreaterThan(salary, pageRequest);
     }
 
     @Test

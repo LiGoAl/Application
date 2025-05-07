@@ -1,8 +1,8 @@
 package com.example.springbootguide.controllerTests;
 
 import com.example.springbootguide.DTO.DepartmentDTO;
-import com.example.springbootguide.controller.DepartmentController;
-import com.example.springbootguide.service.DepartmentService;
+import com.example.springbootguide.controllers.DepartmentController;
+import com.example.springbootguide.services.DepartmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class DepartmentControllerTest {
         List<DepartmentDTO> departments = List.of(new DepartmentDTO(1L, "A",10, BigDecimal.valueOf(10000)),
                 new DepartmentDTO(2L, "B",5, BigDecimal.valueOf(15000)));
 
-        when(departmentService.getDepartments()).thenReturn(departments);
+        when(departmentService.getDepartments(0, 5)).thenReturn(departments);
 
         mockMvc.perform(get("/departments")
                         .accept(MediaType.APPLICATION_JSON))
@@ -56,7 +56,7 @@ public class DepartmentControllerTest {
                 .andExpect(jsonPath("$[1].employeeSize").value(5))
                 .andExpect(jsonPath("$[1].averageSalary").value(new BigDecimal(15000)));
 
-        verify(departmentService, times(1)).getDepartments();
+        verify(departmentService, times(1)).getDepartments(0, 5);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.example.springbootguide.customAnnotation;
+package com.example.springbootguide.customAnnotations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

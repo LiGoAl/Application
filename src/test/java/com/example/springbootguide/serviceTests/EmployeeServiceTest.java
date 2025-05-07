@@ -4,18 +4,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.example.springbootguide.DTO.EmployeeDTO;
-import com.example.springbootguide.exception.ResourceAlreadyOccupiedException;
-import com.example.springbootguide.exception.ResourceNotFoundException;
-import com.example.springbootguide.model.Department;
-import com.example.springbootguide.model.Employee;
-import com.example.springbootguide.repository.DepartmentRepository;
-import com.example.springbootguide.repository.EmployeeRepository;
-import com.example.springbootguide.service.EmployeeService;
+import com.example.springbootguide.exceptions.ResourceAlreadyOccupiedException;
+import com.example.springbootguide.exceptions.ResourceNotFoundException;
+import com.example.springbootguide.models.Department;
+import com.example.springbootguide.models.Employee;
+import com.example.springbootguide.repositories.EmployeeRepository;
+import com.example.springbootguide.services.DepartmentService;
+import com.example.springbootguide.services.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,7 +29,7 @@ public class EmployeeServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
     @Mock
-    private DepartmentRepository departmentRepository;
+    private DepartmentService departmentService;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -48,9 +50,9 @@ public class EmployeeServiceTest {
         employee1.setDepartment(department1);
         employee2.setDepartment(department2);
 
-        when(employeeRepository.findAll()).thenReturn(List.of(employee1, employee2));
+        when(employeeRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(employee1, employee2), PageRequest.of(0, 10), 2));
 
-        List<EmployeeDTO> result = employeeService.getEmployees();
+        List<EmployeeDTO> result = employeeService.getEmployees(0, 10);
 
         assertEquals(2, result.size());
 
@@ -70,7 +72,7 @@ public class EmployeeServiceTest {
         assertEquals(0, dto2.getSalary().compareTo(employee2.getSalary()));
         assertEquals(employee2.getDepartment().getId(), dto2.getDepartmentId());
 
-        verify(employeeRepository, times(1)).findAll();
+        verify(employeeRepository, times(1)).findAll(any(PageRequest.class));
     }
 
     @Test
@@ -81,8 +83,8 @@ public class EmployeeServiceTest {
         employee.setDepartment(department);
         department.setEmployees(List.of(employee));
 
+        when(departmentService.validatedDepartmentId(employeeDTO.getDepartmentId())).thenReturn(department);
         when(employeeRepository.findByEmail(employeeDTO.getEmail())).thenReturn(Optional.empty());
-        when(departmentRepository.findById(employeeDTO.getDepartmentId())).thenReturn(Optional.of(department));
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
         EmployeeDTO result = employeeService.createEmployee(employeeDTO);
@@ -96,9 +98,8 @@ public class EmployeeServiceTest {
         assertEquals(employeeDTO.getDepartmentId(), result.getDepartmentId());
 
         verify(employeeRepository, times(1)).findByEmail(employeeDTO.getEmail());
-        verify(departmentRepository, times(1)).findById(employeeDTO.getDepartmentId());
         verify(employeeRepository, times(1)).save(any(Employee.class));
-
+        verify(departmentService, times(1)).validatedDepartmentId(employeeDTO.getDepartmentId());
     }
 
     @Test
@@ -148,7 +149,7 @@ public class EmployeeServiceTest {
         EmployeeDTO employeeDTO = new EmployeeDTO(null, "Rar", "rar24@mail.ru", LocalDate.parse("2000-01-01"), BigDecimal.valueOf(10000), 2L);
 
         when(employeeRepository.findByEmail(employeeDTO.getEmail())).thenReturn(Optional.empty());
-        when(departmentRepository.findById(employeeDTO.getDepartmentId())).thenReturn(Optional.empty());
+        when(departmentService.validatedDepartmentId(employeeDTO.getDepartmentId())).thenThrow(new ResourceNotFoundException("Department not found by id=%s".formatted(employeeDTO.getDepartmentId())));
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
                 employeeService.createEmployee(employeeDTO));
@@ -156,7 +157,7 @@ public class EmployeeServiceTest {
         assertEquals("Department not found by id=%s".formatted(employeeDTO.getDepartmentId()), exception.getMessage());
 
         verify(employeeRepository, times(1)).findByEmail(employeeDTO.getEmail());
-        verify(departmentRepository, times(1)).findById(employeeDTO.getDepartmentId());
+        verify(departmentService, times(1)).validatedDepartmentId(employeeDTO.getDepartmentId());
     }
 
     @Test
@@ -200,7 +201,7 @@ public class EmployeeServiceTest {
 
         when(employeeRepository.findById(id)).thenReturn(Optional.of(employee));
         when(employeeRepository.findByEmail(email)).thenReturn(Optional.empty());
-        when(departmentRepository.findById(departmentId)).thenReturn(Optional.of(department2));
+        when(departmentService.validatedDepartmentId(departmentId)).thenReturn(department2);
 
         employeeService.updateEmployee(id, email, salary, departmentId);
 
@@ -210,7 +211,7 @@ public class EmployeeServiceTest {
 
         verify(employeeRepository, times(1)).findById(id);
         verify(employeeRepository, times(1)).findByEmail(email);
-        verify(departmentRepository, times(1)).findById(departmentId);
+        verify(departmentService, times(1)).validatedDepartmentId(departmentId);
     }
 
     @Test
@@ -267,7 +268,7 @@ public class EmployeeServiceTest {
 
         when(employeeRepository.findById(id)).thenReturn(Optional.of(employee));
         when(employeeRepository.findByEmail(email)).thenReturn(Optional.empty());
-        when(departmentRepository.findById(departmentId)).thenReturn(Optional.empty());
+        when(departmentService.validatedDepartmentId(departmentId)).thenThrow(new ResourceNotFoundException("Department not found by id=%s".formatted(departmentId)));
 
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
                 employeeService.updateEmployee(id, email, salary, departmentId));
@@ -276,6 +277,6 @@ public class EmployeeServiceTest {
 
         verify(employeeRepository, times(1)).findById(id);
         verify(employeeRepository, times(1)).findByEmail(email);
-        verify(departmentRepository, times(1)).findById(departmentId);
+        verify(departmentService, times(1)).validatedDepartmentId(departmentId);
     }
 }

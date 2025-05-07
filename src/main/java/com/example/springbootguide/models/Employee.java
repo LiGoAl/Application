@@ -1,6 +1,6 @@
-package com.example.springbootguide.model;
+package com.example.springbootguide.models;
 
-import com.example.springbootguide.customAnnotation.ValidBirthDate;
+import com.example.springbootguide.customAnnotations.ValidBirthDate;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Table(name = "employee")
 @NoArgsConstructor
 @Getter
+@Setter
 public class Employee {
     @Id
     @SequenceGenerator(
@@ -29,18 +30,15 @@ public class Employee {
     private Long id;
     @NotBlank(message = "Name can't be empty")
     private String name;
-    @Setter
     @Pattern(regexp = "\\w+@\\w+\\.\\w+",message = "Email doesn't match the form")
     private String email;
     @NotNull
     @ValidBirthDate
     private LocalDate birthDate;
-    @Setter
     @DecimalMin(value = "5000", message = "Salary must be bigger than 5000")
     @NotNull
     private BigDecimal salary;
     @ManyToOne
-    @Setter
     @JoinColumn(name = "department_id")
     private Department department;
 

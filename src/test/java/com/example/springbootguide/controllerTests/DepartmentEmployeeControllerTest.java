@@ -3,8 +3,8 @@ package com.example.springbootguide.controllerTests;
 import com.example.springbootguide.DTO.DepartmentDTO;
 import com.example.springbootguide.DTO.EmployeeDTO;
 import com.example.springbootguide.DTO.EmployeeDepartmentDTO;
-import com.example.springbootguide.controller.DepartmentEmployeeController;
-import com.example.springbootguide.service.DepartmentEmployeeService;
+import com.example.springbootguide.controllers.DepartmentEmployeeController;
+import com.example.springbootguide.services.DepartmentEmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ public class DepartmentEmployeeControllerTest {
                 new EmployeeDepartmentDTO(2L, "Pasha", 1L, "A"),
                 new EmployeeDepartmentDTO(3L, "Jim", 2L, "B"));
 
-        when(departmentEmployeeService.getAllEmployeesWithDepartments()).thenReturn(dtos);
+        when(departmentEmployeeService.getAllEmployeesWithDepartments(0, 5)).thenReturn(dtos);
 
         mockMvc.perform(get("/with-departments")
                         .accept(MediaType.APPLICATION_JSON))
@@ -68,7 +68,7 @@ public class DepartmentEmployeeControllerTest {
                 .andExpect(jsonPath("$[2].departmentId").value(2L))
                 .andExpect(jsonPath("$[2].departmentName").value("B"));
 
-        verify(departmentEmployeeService, times(1)).getAllEmployeesWithDepartments();
+        verify(departmentEmployeeService, times(1)).getAllEmployeesWithDepartments(0, 5);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class DepartmentEmployeeControllerTest {
                 new EmployeeDTO(2L, "Jim", "jim@mail.ru", LocalDate.parse("2000-03-01"), BigDecimal.valueOf(45000), 2L));
         BigDecimal bigDecimal = BigDecimal.valueOf(40000);
 
-        when(departmentEmployeeService.getEmployeesBySalaryGreaterThan(bigDecimal)).thenReturn(dtos);
+        when(departmentEmployeeService.getEmployeesBySalaryGreaterThan(bigDecimal, 0, 5)).thenReturn(dtos);
 
         mockMvc.perform(get("/salary-greater-than/{salary}", bigDecimal)
                         .accept(MediaType.APPLICATION_JSON))
@@ -161,6 +161,6 @@ public class DepartmentEmployeeControllerTest {
                 .andExpect(jsonPath("$[1].departmentId").value(2L));
 
 
-        verify(departmentEmployeeService, times(1)).getEmployeesBySalaryGreaterThan(bigDecimal);
+        verify(departmentEmployeeService, times(1)).getEmployeesBySalaryGreaterThan(bigDecimal, 0, 5);
     }
 }

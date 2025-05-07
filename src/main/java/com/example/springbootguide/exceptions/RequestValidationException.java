@@ -1,4 +1,4 @@
-package com.example.springbootguide.exception;
+package com.example.springbootguide.exceptions;
 
 public class RequestValidationException extends RuntimeException {
     public RequestValidationException(String message) {
