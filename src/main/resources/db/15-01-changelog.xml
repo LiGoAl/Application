@@ -9,7 +9,7 @@
         <createSequence sequenceName="department_sequence" />
         <createSequence sequenceName="employee_sequence" />
     </changeSet>
-    <changeSet id="114" author="LiGoAl" runOnChange="true">
+    <changeSet id="114" author="LiGoAl">
         <createTable tableName="department">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false" />
