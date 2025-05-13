@@ -3,18 +3,10 @@ package com.example.springbootguide.controllerTests;
 import com.example.springbootguide.DTO.DepartmentDTO;
 import com.example.springbootguide.DTO.EmployeeDTO;
 import com.example.springbootguide.DTO.EmployeeDepartmentDTO;
-import com.example.springbootguide.controllers.DepartmentEmployeeController;
 import com.example.springbootguide.services.DepartmentEmployeeService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,22 +17,10 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(DepartmentEmployeeController.class)
-public class DepartmentEmployeeControllerTest {
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
+public class DepartmentEmployeeControllerTest extends BaseControllerTest {
 
     @MockitoBean
     private DepartmentEmployeeService departmentEmployeeService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        objectMapper.registerModule(new JavaTimeModule());
-    }
 
     @Test
     public void testGetAllEmployeesWithDepartments_Success() throws Exception {
@@ -51,6 +31,7 @@ public class DepartmentEmployeeControllerTest {
         when(departmentEmployeeService.getAllEmployeesWithDepartments(0, 5)).thenReturn(dtos);
 
         mockMvc.perform(get("/with-departments")
+                        .header("Authorization", "Bearer " + getAccessUserToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -78,6 +59,7 @@ public class DepartmentEmployeeControllerTest {
         when(departmentEmployeeService.getDepartmentWithMostEmployees()).thenReturn(departmentDTO);
 
         mockMvc.perform(get("/most-employees")
+                        .header("Authorization", "Bearer " + getAccessUserToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -97,6 +79,7 @@ public class DepartmentEmployeeControllerTest {
         when(departmentEmployeeService.getDepartmentWithMinimalEmployees()).thenReturn(departmentDTO);
 
         mockMvc.perform(get("/minimal-employees")
+                        .header("Authorization", "Bearer " + getAccessUserToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -117,6 +100,7 @@ public class DepartmentEmployeeControllerTest {
         when(departmentEmployeeService.getTop10DepartmentsByAverageSalary()).thenReturn(dtos);
 
         mockMvc.perform(get("/top10-departments-by-average-salary")
+                        .header("Authorization", "Bearer " + getAccessUserToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -143,6 +127,7 @@ public class DepartmentEmployeeControllerTest {
         when(departmentEmployeeService.getEmployeesBySalaryGreaterThan(bigDecimal, 0, 5)).thenReturn(dtos);
 
         mockMvc.perform(get("/salary-greater-than/{salary}", bigDecimal)
+                        .header("Authorization", "Bearer " + getAccessUserToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

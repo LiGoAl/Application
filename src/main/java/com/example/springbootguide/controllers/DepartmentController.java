@@ -6,6 +6,7 @@ import com.example.springbootguide.services.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,18 +26,21 @@ public class DepartmentController {
         return departmentService.getDepartments(page, size);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DepartmentDTO createDepartment(@RequestBody @Valid DepartmentDTO departmentDTO) {
         return departmentService.createDepartment(departmentDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{departmentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDepartment(@PathVariable("departmentId") Long id) {
         departmentService.deleteDepartment(validatedDepartmentId(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{departmentId}")
     public void updateDepartment(@PathVariable("departmentId") Long id,
                                  @RequestParam(value = "departmentName", required = false) String name) {

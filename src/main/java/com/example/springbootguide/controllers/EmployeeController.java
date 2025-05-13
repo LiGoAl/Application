@@ -6,6 +6,7 @@ import com.example.springbootguide.services.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,18 +27,21 @@ public class EmployeeController {
         return employeeService.getEmployees(page, size);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EmployeeDTO createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
         return employeeService.createEmployee(employeeDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{employeeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteEmployee(@PathVariable("employeeId") Long id) {
         employeeService.deleteEmployee(validatedEmployeeId(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{employeeId}")
     public void updateEmployee(@PathVariable("employeeId") Long id,
                                @RequestParam(value = "email", required = false) String email,

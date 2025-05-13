@@ -1,18 +1,10 @@
 package com.example.springbootguide.controllerTests;
 
 import com.example.springbootguide.DTO.EmployeeDTO;
-import com.example.springbootguide.controllers.EmployeeController;
 import com.example.springbootguide.services.EmployeeService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,31 +15,21 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(EmployeeController.class)
-public class EmployeeControllerTest {
-    @Autowired
-    private ObjectMapper objectMapper;
 
-    @Autowired
-    private MockMvc mockMvc;
+public class EmployeeControllerTest extends BaseControllerTest {
 
     @MockitoBean
     private EmployeeService employeeService;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        objectMapper.registerModule(new JavaTimeModule());
-    }
-
     @Test
-    public void testGetDepartments_Success() throws Exception {
+    public void testGetEmployee_Success() throws Exception {
         List<EmployeeDTO> employees = List.of(new EmployeeDTO(1L, "Vasya", "vasya@gmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(50000), 1L),
                 new EmployeeDTO(2L, "Jim", "jim@mail.ru", LocalDate.parse("2000-03-01"), BigDecimal.valueOf(45000), 2L));
 
         when(employeeService.getEmployees(0, 5)).thenReturn(employees);
 
         mockMvc.perform(get("/employees")
+                        .header("Authorization", "Bearer " + getAccessUserToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -69,13 +51,14 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testCreateDepartment_Success() throws Exception {
+    public void testCreateEmployee_Success() throws Exception {
         EmployeeDTO employeeDTO = new EmployeeDTO(null, "Vasya", "vasya@gmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(50000), 1L);
         EmployeeDTO savedEmployeeDTO = new EmployeeDTO(1L, "Vasya", "vasya@gmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(50000), 1L);
 
         when(employeeService.createEmployee(any(EmployeeDTO.class))).thenReturn(savedEmployeeDTO);
 
         mockMvc.perform(post("/employees")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(employeeDTO)))
@@ -91,10 +74,11 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testCreateDepartment_BlankName() throws Exception {
+    public void testCreateEmployee_BlankName() throws Exception {
         EmployeeDTO employeeDTO = new EmployeeDTO(null, "", "vasya@gmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(50000), 1L);
 
         mockMvc.perform(post("/employees")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(employeeDTO)))
@@ -103,10 +87,11 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testCreateDepartment_NotPatternEmail() throws Exception {
+    public void testCreateEmployee_NotPatternEmail() throws Exception {
         EmployeeDTO employeeDTO = new EmployeeDTO(null, "Vasya", "vasyagmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(50000), 1L);
 
         mockMvc.perform(post("/employees")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(employeeDTO)))
@@ -115,10 +100,11 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testCreateDepartment_NotValidBirthDate() throws Exception {
+    public void testCreateEmployee_NotValidBirthDate() throws Exception {
         EmployeeDTO employeeDTO = new EmployeeDTO(null, "Vasya", "vasya@gmail.com", LocalDate.parse("2020-01-03"), BigDecimal.valueOf(50000), 1L);
 
         mockMvc.perform(post("/employees")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(employeeDTO)))
@@ -127,10 +113,11 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testCreateDepartment_DecimalMin() throws Exception {
+    public void testCreateEmployee_DecimalMin() throws Exception {
         EmployeeDTO employeeDTO = new EmployeeDTO(null, "Vasya", "vasya@gmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(4999), 1L);
 
         mockMvc.perform(post("/employees")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(employeeDTO)))
@@ -139,10 +126,11 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    public void testCreateDepartment_NotPositiveDepartmentId() throws Exception {
+    public void testCreateEmployee_NotPositiveDepartmentId() throws Exception {
         EmployeeDTO employeeDTO = new EmployeeDTO(null, "Vasya", "vasya@gmail.com", LocalDate.parse("2000-01-03"), BigDecimal.valueOf(49999), -1L);
 
         mockMvc.perform(post("/employees")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(employeeDTO)))
@@ -151,12 +139,13 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void testDeleteDepartment_Success() throws Exception {
+    void testDeleteEmployee_Success() throws Exception {
         Long id = 1L;
 
         doNothing().when(employeeService).deleteEmployee(id);
 
         mockMvc.perform(delete("/employees/{employeeId}", id)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -164,17 +153,18 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void testDeleteDepartment_NotPositiveOrNullId() throws Exception {
+    void testDeleteEmployee_NotPositiveOrNullId() throws Exception {
         Long id = -1L;
 
         mockMvc.perform(delete("/employees/{employeeId}", id)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Id must be greater than 0 and can't be empty"));
     }
 
     @Test
-    void testUpdateDepartment_Success() throws Exception {
+    void testUpdateEmployee_Success() throws Exception {
         Long id = 1L;
         String email = "vasya25@gmail.com";
         BigDecimal salary = BigDecimal.valueOf(75000);
@@ -183,6 +173,7 @@ public class EmployeeControllerTest {
         doNothing().when(employeeService).updateEmployee(id, email, salary, departmentId);
 
         mockMvc.perform(put("/employees/{employeeId}", id)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .param("email", email)
                         .param("salary", salary.toString())
                         .param("departmentId", departmentId.toString())
@@ -193,21 +184,23 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void testUpdateDepartment_NotPositiveOrNullId() throws Exception {
+    void testUpdateEmployee_NotPositiveOrNullId() throws Exception {
         Long id = -1L;
 
         mockMvc.perform(put("/employees/{employeeId}", id)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Id must be greater than 0 and can't be empty"));
     }
 
     @Test
-    void testUpdateDepartment_NotPatternEmail() throws Exception {
+    void testUpdateEmployee_NotPatternEmail() throws Exception {
         Long id = 1L;
         String email = "vasya25gmail.com";
 
         mockMvc.perform(put("/employees/{employeeId}", id)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .param("email", email)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -215,11 +208,12 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void testUpdateDepartment_DecimalMin() throws Exception {
+    void testUpdateEmployee_DecimalMin() throws Exception {
         Long id = 1L;
         BigDecimal salary = BigDecimal.valueOf(750);
 
         mockMvc.perform(put("/employees/{employeeId}", id)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .param("salary", salary.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -227,11 +221,12 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void testUpdateDepartment_NotPositiveDepartmentId() throws Exception {
+    void testUpdateEmployee_NotPositiveDepartmentId() throws Exception {
         Long id = 1L;
         Long departmentId = -2L;
 
         mockMvc.perform(put("/employees/{employeeId}", id)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .param("departmentId", departmentId.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

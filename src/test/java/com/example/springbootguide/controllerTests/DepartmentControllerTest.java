@@ -1,17 +1,11 @@
 package com.example.springbootguide.controllerTests;
 
 import com.example.springbootguide.DTO.DepartmentDTO;
-import com.example.springbootguide.controllers.DepartmentController;
 import com.example.springbootguide.services.DepartmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,19 +15,10 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(DepartmentController.class)
-public class DepartmentControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+public class DepartmentControllerTest extends BaseControllerTest {
 
     @MockitoBean
     private DepartmentService departmentService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testGetDepartments_Success() throws Exception {
@@ -43,6 +28,7 @@ public class DepartmentControllerTest {
         when(departmentService.getDepartments(0, 5)).thenReturn(departments);
 
         mockMvc.perform(get("/departments")
+                        .header("Authorization", "Bearer " + getAccessUserToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -67,6 +53,7 @@ public class DepartmentControllerTest {
         when(departmentService.createDepartment(any(DepartmentDTO.class))).thenReturn(savedDepartmentDTO);
 
         mockMvc.perform(post("/departments")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(departmentDTO)))
@@ -84,6 +71,7 @@ public class DepartmentControllerTest {
         DepartmentDTO departmentDTO = new DepartmentDTO(null, "",10, BigDecimal.valueOf(10000));
 
         mockMvc.perform(post("/departments")
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(departmentDTO)))
@@ -98,6 +86,7 @@ public class DepartmentControllerTest {
         doNothing().when(departmentService).deleteDepartment(departmentId);
 
         mockMvc.perform(delete("/departments/{departmentId}", departmentId)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -109,6 +98,7 @@ public class DepartmentControllerTest {
         Long departmentId = -1L;
 
         mockMvc.perform(delete("/departments/{departmentId}", departmentId)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Id must be greater than 0 and can't be empty"));
@@ -122,6 +112,7 @@ public class DepartmentControllerTest {
         doNothing().when(departmentService).updateDepartment(departmentId, departmentName);
 
         mockMvc.perform(put("/departments/{departmentId}", departmentId)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .param("departmentName", departmentName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -135,6 +126,7 @@ public class DepartmentControllerTest {
         String departmentName = "A";
 
         mockMvc.perform(put("/departments/{departmentId}", departmentId)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .param("departmentName", departmentName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -147,6 +139,7 @@ public class DepartmentControllerTest {
         String departmentName = "";
 
         mockMvc.perform(put("/departments/{departmentId}", departmentId)
+                        .header("Authorization", "Bearer " + getAccessAdminToken())
                         .param("departmentName", departmentName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
