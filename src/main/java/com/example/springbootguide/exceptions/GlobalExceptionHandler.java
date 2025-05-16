@@ -3,7 +3,7 @@ package com.example.springbootguide.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +14,15 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthenticationException(AccessDeniedException ex) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("status", HttpStatus.FORBIDDEN.value());
+        errors.put("error", "Access denied");
+        errors.put("message", ex.getMessage());
+        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthenticationException(AuthenticationException ex) {
@@ -72,8 +81,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleAllException(Exception ex) {
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<Map<String, Object>> handleAllException(Throwable ex) {
         Map<String, Object> errors = new HashMap<>();
         errors.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errors.put("error", "An unexpected error occurred");
